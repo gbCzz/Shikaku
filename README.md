@@ -1,2 +1,2 @@
 # Shikaku
-An site of online Shikaku game.
+A site of online Shikaku game.
