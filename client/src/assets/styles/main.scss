@@ -123,3 +123,90 @@
 	  margin-top: 5px;
 	}
   }
+
+// 游戏相关变量
+:root {
+	// ... 原有的变量
+	
+	// 游戏颜色
+	--game-primary: #4a6ee0;
+	--game-secondary: #764ba2;
+	--game-success: #10b981;
+	--game-warning: #f59e0b;
+	--game-danger: #ef4444;
+	--game-light: #f8fafc;
+	--game-dark: #1e293b;
+  }
+  
+  // 游戏按钮样式
+  .game-btn {
+	padding: 12px 24px;
+	border: none;
+	border-radius: 8px;
+	font-size: 16px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	
+	&-primary {
+	  background-color: var(--game-primary);
+	  color: white;
+	  
+	  &:hover {
+		background-color: darken(#4a6ee0, 10%);
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(74, 110, 224, 0.3);
+	  }
+	  
+	  &:disabled {
+		background-color: #94a3b8;
+		cursor: not-allowed;
+		transform: none;
+		box-shadow: none;
+	  }
+	}
+	
+	&-secondary {
+	  background-color: var(--game-secondary);
+	  color: white;
+	  
+	  &:hover {
+		background-color: darken(#764ba2, 10%);
+		transform: translateY(-2px);
+	  }
+	}
+	
+	&-block {
+	  width: 100%;
+	}
+  }
+  
+  // 游戏卡片样式
+  .game-card {
+	background: white;
+	border-radius: 12px;
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+	padding: 30px;
+	margin-bottom: 20px;
+	
+	&-title {
+	  font-size: 22px;
+	  font-weight: 700;
+	  color: var(--game-dark);
+	  margin-bottom: 20px;
+	  padding-bottom: 15px;
+	  border-bottom: 2px solid var(--game-light);
+	}
+  }
+  
+  // 响应式调整
+  @media (max-width: 768px) {
+	.game-btn {
+	  padding: 10px 20px;
+	  font-size: 14px;
+	}
+	
+	.game-card {
+	  padding: 20px;
+	}
+  }
