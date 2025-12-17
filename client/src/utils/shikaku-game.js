@@ -294,7 +294,7 @@ export function generateValidMap(gridSize, gameMap) {
 
 export function generateFallbackMap(gridSize, gameMap) {
   const size = gridSize;
-  
+
   // 清空数组
   for (let r = 0; r < size; r++) {
     for (let c = 0; c < size; c++) {

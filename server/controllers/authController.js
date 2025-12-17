@@ -34,13 +34,9 @@ class AuthController {
 
       // 创建用户
       const user = await User.create({ username, email, password });
-      
+
       // 生成JWT token
-      const token = jwt.sign(
-        { userId: user.id, username: user.username },
-        JWT_SECRET,
-        { expiresIn: '24h' }
-      );
+      const token = jwt.sign({ userId: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
 
       ctx.status = 201;
       ctx.body = {
@@ -48,9 +44,9 @@ class AuthController {
         user: {
           id: user.id,
           username: user.username,
-          email: user.email
+          email: user.email,
         },
-        token
+        token,
       };
     } catch (error) {
       console.error('注册错误:', error);
@@ -87,11 +83,7 @@ class AuthController {
       }
 
       // 生成JWT token
-      const token = jwt.sign(
-        { userId: user.id, username: user.username },
-        JWT_SECRET,
-        { expiresIn: '24h' }
-      );
+      const token = jwt.sign({ userId: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
 
       ctx.status = 200;
       ctx.body = {
@@ -99,9 +91,9 @@ class AuthController {
         user: {
           id: user.id,
           username: user.username,
-          email: user.email
+          email: user.email,
         },
-        token
+        token,
       };
     } catch (error) {
       console.error('登录错误:', error);

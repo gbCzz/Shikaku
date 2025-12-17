@@ -9,12 +9,12 @@ dotenv.config();
 const app = new Koa();
 
 // 中间件
-app.use(cors({
-  origin: process.env.NODE_ENV === 'development' 
-    ? 'http://localhost:5173' 
-    : process.env.CLIENT_URL,
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: process.env.NODE_ENV === 'development' ? 'http://localhost:5173' : process.env.CLIENT_URL,
+    credentials: true,
+  })
+);
 
 app.use(bodyParser());
 
@@ -30,7 +30,7 @@ app.use(async (ctx, next) => {
     console.error('服务器错误:', error);
     ctx.status = error.status || 500;
     ctx.body = {
-      error: error.message || '服务器内部错误'
+      error: error.message || '服务器内部错误',
     };
   }
 });

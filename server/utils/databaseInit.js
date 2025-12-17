@@ -1,19 +1,19 @@
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
-import bcrypt from 'bcryptjs';  // 直接导入 bcryptjs
+import bcrypt from 'bcryptjs'; // 直接导入 bcryptjs
 
 dotenv.config();
 
 async function initializeDatabase() {
   let connection;
-  
+
   try {
     // 创建连接（不指定数据库）
     connection = await mysql.createConnection({
       host: process.env.DB_HOST,
       port: process.env.DB_PORT || 3306,
       user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD
+      password: process.env.DB_PASSWORD,
     });
 
     console.log('正在初始化数据库...');
@@ -43,11 +43,12 @@ async function initializeDatabase() {
     if (rows[0].count === 0) {
       // 使用 bcrypt.hash 而不是 bcrypt.hash
       const hashedPassword = await bcrypt.hash('admin123', 10);
-      
-      await connection.query(
-        'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-        ['admin', 'admin@shikaku.com', hashedPassword]
-      );
+
+      await connection.query('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', [
+        'admin',
+        'admin@shikaku.com',
+        hashedPassword,
+      ]);
       console.log('默认管理员用户创建成功: admin/admin123');
     }
 

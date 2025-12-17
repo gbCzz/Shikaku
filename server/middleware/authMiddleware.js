@@ -7,7 +7,7 @@ const authMiddleware = async (ctx, next) => {
   try {
     // 从请求头获取token
     const authHeader = ctx.headers.authorization;
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       ctx.status = 401;
       ctx.body = { error: '未提供认证令牌' };
@@ -15,17 +15,17 @@ const authMiddleware = async (ctx, next) => {
     }
 
     const token = authHeader.split(' ')[1];
-    
+
     // 验证token
     const decoded = jwt.verify(token, JWT_SECRET);
-    
+
     // 将用户信息存入上下文
     ctx.state.user = decoded;
-    
+
     await next();
   } catch (error) {
     console.error('认证错误:', error.message);
-    
+
     if (error.name === 'JsonWebTokenError') {
       ctx.status = 401;
       ctx.body = { error: '无效的认证令牌' };

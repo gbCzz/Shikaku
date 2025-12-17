@@ -7,18 +7,18 @@ class InitController {
     try {
       // 测试数据库连接
       const isConnected = await testConnection();
-      
+
       if (!isConnected) {
         // 尝试初始化数据库
         const initSuccess = await initializeDatabase();
-        
+
         if (initSuccess) {
           // 再次测试连接
           const reconnected = await testConnection();
           ctx.status = 200;
-          ctx.body = { 
+          ctx.body = {
             initialized: reconnected,
-            message: reconnected ? '数据库初始化成功' : '数据库连接失败'
+            message: reconnected ? '数据库初始化成功' : '数据库连接失败',
           };
         } else {
           ctx.status = 500;
