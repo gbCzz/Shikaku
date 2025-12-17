@@ -6,49 +6,59 @@ import router from '@/router';
 export const useAuthStore = defineStore('auth', () => {
   // 状态
   const user = ref(null);
-  const token = ref(localStorage.getItem('token'));
+  const token = ref(null);
   const isInitialized = ref(false);
   const isLoading = ref(false);
   const error = ref(null);
 
   // 计算属性
-  const isAuthenticated = computed(() => !!token.value && !!user.value);
-  
-  // API配置
-  const api = axios.create({
-    baseURL: '/api',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+  const isAuthenticated = computed(() => {
+    return !!token.value && !!user.value;
   });
 
-  // 请求拦截器 - 添加token
-  api.interceptors.request.use(
-    config => {
-      if (token.value) {
-        config.headers.Authorization = `Bearer ${token.value}`;
-      }
-      return config;
-    },
-    error => Promise.reject(error)
-  );
+  // API配置 - 使用函数延迟创建，避免初始化问题
+  const createApi = () => {
+    const api = axios.create({
+      baseURL: '/api',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  // 响应拦截器 - 处理token过期
-  api.interceptors.response.use(
-    response => response,
-    error => {
-      if (error.response?.status === 401) {
-        // token过期或无效
-        logout();
-        router.push('/login');
+    // 请求拦截器 - 添加token
+    api.interceptors.request.use(
+      (config) => {
+        if (token.value) {
+          config.headers.Authorization = `Bearer ${token.value}`;
+        }
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
+
+    // 响应拦截器 - 处理token过期
+    api.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          // token过期或无效
+          logout();
+          router.push('/login');
+        }
+        return Promise.reject(error);
       }
-      return Promise.reject(error);
-    }
-  );
+    );
+
+    return api;
+  };
+
+  // 获取 API 实例
+  const getApi = () => createApi();
 
   // 检查初始化状态
   async function checkInit() {
     try {
+      const api = getApi();
       const response = await api.get('/init');
       isInitialized.value = true;
       return response.data;
@@ -58,28 +68,31 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  // 重置错误状态
   function clearError() {
-	error.value = null;
+    error.value = null;
   }
 
   // 登录
   async function login(credentials) {
+    // 先清除之前的错误
+    clearError();
     isLoading.value = true;
-    error.value = null;
-    
+
     try {
+      const api = getApi();
       const response = await api.post('/auth/login', credentials);
-      
+
       // 保存token和用户信息
       token.value = response.data.token;
       user.value = response.data.user;
-      
+
       // 存储到localStorage
       localStorage.setItem('token', token.value);
-      
+
       // 跳转到主页面
       router.push('/main');
-      
+
       return response.data;
     } catch (err) {
       error.value = err.response?.data?.error || '登录失败';
@@ -91,18 +104,20 @@ export const useAuthStore = defineStore('auth', () => {
 
   // 注册
   async function register(userData) {
+    // 先清除之前的错误
+    clearError();
     isLoading.value = true;
-    error.value = null;
-    
+
     try {
+      const api = getApi();
       const response = await api.post('/auth/register', userData);
-      
+
       // 自动登录
       await login({
         username: userData.username,
-        password: userData.password
+        password: userData.password,
       });
-      
+
       return response.data;
     } catch (err) {
       error.value = err.response?.data?.error || '注册失败';
@@ -115,27 +130,40 @@ export const useAuthStore = defineStore('auth', () => {
   // 获取当前用户信息
   async function getCurrentUser() {
     if (!token.value) return;
-    
+
     try {
+      const api = getApi();
       const response = await api.get('/auth/me');
       user.value = response.data.user;
     } catch (err) {
       console.error('获取用户信息失败:', err);
-      logout();
+      // 不要在这里调用 logout，因为可能导致无限循环
+      if (err.response?.status === 401) {
+        token.value = null;
+        user.value = null;
+        localStorage.removeItem('token');
+      }
     }
   }
 
   // 登出
   function logout() {
+    clearError();
     user.value = null;
     token.value = null;
     localStorage.removeItem('token');
     router.push('/login');
   }
 
-  // 初始化时检查token
-  if (token.value) {
-    getCurrentUser();
+  // 初始化函数 - 在组件中调用
+  function init() {
+    // 从 localStorage 恢复 token
+    const savedToken = localStorage.getItem('token');
+    if (savedToken) {
+      token.value = savedToken;
+      // 异步获取用户信息
+      getCurrentUser();
+    }
   }
 
   return {
@@ -145,11 +173,12 @@ export const useAuthStore = defineStore('auth', () => {
     isLoading,
     error,
     isAuthenticated,
+    init, // 添加 init 方法
     checkInit,
-	clearError,
+    clearError,
     login,
     register,
     getCurrentUser,
-    logout
+    logout,
   };
 });

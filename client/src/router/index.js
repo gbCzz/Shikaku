@@ -4,58 +4,57 @@ import { useAuthStore } from '@/stores/auth';
 const routes = [
   {
     path: '/',
-    redirect: '/login'
+    redirect: '/login',
   },
   {
     path: '/login',
     name: 'Login',
     component: () => import('@/components/Login.vue'),
-    meta: { requiresGuest: true }
+    meta: { requiresGuest: true },
   },
   {
     path: '/register',
     name: 'Register',
     component: () => import('@/components/Register.vue'),
-    meta: { requiresGuest: true }
+    meta: { requiresGuest: true },
   },
   {
     path: '/main',
     name: 'Main',
     component: () => import('@/components/Main.vue'),
-    meta: { requiresAuth: true }
-  }
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
 });
 
 // 路由守卫
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
-  
-  // 如果应用未初始化，先检查初始化状态
-  if (!authStore.isInitialized) {
-    try {
-      await authStore.checkInit();
-    } catch (error) {
-      console.error('初始化检查失败:', error);
-    }
+
+  // 确保 store 已初始化
+  if (!authStore.token && localStorage.getItem('token')) {
+    authStore.init();
   }
-  
+
+  // 在路由切换时清除错误状态
+  authStore.clearError();
+
   // 检查是否需要认证
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next('/login');
     return;
   }
-  
+
   // 检查是否要求未登录状态（如登录/注册页面）
   if (to.meta.requiresGuest && authStore.isAuthenticated) {
     next('/main');
     return;
   }
-  
+
   next();
 });
 
