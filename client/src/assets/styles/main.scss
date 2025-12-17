@@ -1,0 +1,125 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+  }
+  
+  body {
+	font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	min-height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+  }
+  
+  #app {
+	width: 100%;
+	max-width: 1200px;
+	margin: 0 auto;
+  }
+  
+  // 全局变量
+  :root {
+	--primary-color: #4a6ee0;
+	--secondary-color: #764ba2;
+	--success-color: #10b981;
+	--danger-color: #ef4444;
+	--warning-color: #f59e0b;
+	--light-color: #f8fafc;
+	--dark-color: #1e293b;
+	--gray-color: #64748b;
+  }
+  
+  // 通用样式类
+  .container {
+	width: 100%;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 20px;
+  }
+  
+  .btn {
+	display: inline-block;
+	padding: 10px 20px;
+	border: none;
+	border-radius: 6px;
+	font-size: 16px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	
+	&-primary {
+	  background-color: var(--primary-color);
+	  color: white;
+	  
+	  &:hover {
+		background-color: darken(#4a6ee0, 10%);
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(74, 110, 224, 0.3);
+	  }
+	}
+	
+	&-secondary {
+	  background-color: var(--secondary-color);
+	  color: white;
+	  
+	  &:hover {
+		background-color: darken(#764ba2, 10%);
+	  }
+	}
+	
+	&-block {
+	  width: 100%;
+	}
+  }
+  
+  .card {
+	background: white;
+	border-radius: 12px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+	padding: 40px;
+	
+	&-title {
+	  font-size: 24px;
+	  font-weight: 700;
+	  color: var(--dark-color);
+	  margin-bottom: 30px;
+	  text-align: center;
+	}
+  }
+  
+  .form-group {
+	margin-bottom: 20px;
+	
+	label {
+	  display: block;
+	  margin-bottom: 8px;
+	  font-weight: 600;
+	  color: var(--dark-color);
+	}
+	
+	input {
+	  width: 100%;
+	  padding: 12px 16px;
+	  border: 2px solid #e2e8f0;
+	  border-radius: 6px;
+	  font-size: 16px;
+	  transition: border-color 0.3s ease;
+	  
+	  &:focus {
+		outline: none;
+		border-color: var(--primary-color);
+	  }
+	  
+	  &.error {
+		border-color: var(--danger-color);
+	  }
+	}
+	
+	.error-message {
+	  color: var(--danger-color);
+	  font-size: 14px;
+	  margin-top: 5px;
+	}
+  }
