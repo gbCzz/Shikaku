@@ -98,6 +98,41 @@ class ShikakuMap {
           const idx = Math.floor(Math.random() * amount);
           if (this.tryToGrowBlock(idx) === null) {
             if (this.availableSlots() === 0) {
+              // 首先，清除所有当前数字
+              for (let y = 0; y < this.height; y++) {
+                for (let x = 0; x < this.width; x++) {
+                  this.numbersGrid[y][x] = 0;
+                }
+              }
+
+              // 为每个区块重新随机选择数字位置并设置数字
+              this.subMaps.forEach((block) => {
+                // 在区块内随机选择一个位置
+                block.randYPos = Math.floor(Math.random() * block.height);
+                block.randXPos = Math.floor(Math.random() * block.width);
+
+                // 设置数字
+                this.numbersGrid[block.ypos + block.randYPos][block.xpos + block.randXPos] = block.size();
+              });
+
+              // 验证数字设置是否正确（可选）
+              let hasNumbers = false;
+              for (let y = 0; y < this.height; y++) {
+                for (let x = 0; x < this.width; x++) {
+                  if (this.numbersGrid[y][x] > 0) {
+                    hasNumbers = true;
+                    break;
+                  }
+                }
+                if (hasNumbers) break;
+              }
+
+              if (!hasNumbers) {
+                // 如果没有数字，重置并重新尝试
+                this.reset();
+                break;
+              }
+
               return true; // 生成成功
             }
           }
@@ -382,3 +417,4 @@ export function handleKeyDown(event, cancelSelection, resetGame) {
     resetGame();
   }
 }
+
